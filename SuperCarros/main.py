@@ -4,12 +4,10 @@ import dns
 import re
 from scrapy.crawler import CrawlerProcess
 import pprint
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
-# RBuQdrNXtDaJggE0
-# eljevas
 
 dbName = 'v5'
 dbConnectionString = os.environ('MONGO_URL')
