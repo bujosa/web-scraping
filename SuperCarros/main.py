@@ -4,13 +4,15 @@ import dns
 import re
 from scrapy.crawler import CrawlerProcess
 import pprint
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # RBuQdrNXtDaJggE0
 # eljevas
 
 dbName = 'v5'
-dbConnectionString = "localhost:27017/crawl"
+dbConnectionString = os.environ('MONGO_URL')
 
 
 class SupercarrosListCrawlerSpider(scrapy.Spider):

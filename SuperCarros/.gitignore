@@ -3,3 +3,6 @@
 
 #eliminated vscide
 .vscode/
+
+#env files
+.env
