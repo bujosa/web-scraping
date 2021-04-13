@@ -173,9 +173,7 @@ def get_car_url(key, value):
         for url in urls:
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
             get_car_information(car_url)
-           
-
-        
+              
 #Vehicle data manager
 class VehicleDataManager():
     def __init__(self): 
