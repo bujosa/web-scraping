@@ -29,9 +29,14 @@ def get_brand_url(soup):
     return brand_href
 
 def get_car_url(key, value):
+    print(key)
     return None
-    
+
 def get_car_information(soup):
+    return None
+
+# Transform url
+def convert_url(url):
     return None
 
 #Vehicle data manager
@@ -51,3 +56,4 @@ class VehicleDataManager():
 brand_url_and_count = get_brand_url(soup)
 
 for key in brand_url_and_count:
+    get_car_url(key, brand_url_and_count[key])
