@@ -19,7 +19,7 @@ max_vehicle_per_page = 48
 limit_car_per_brand = 1969
 
 #Fields
-fields = { "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros"}
+fields = { "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
 
 # Get all the brand and find your url
 def get_brand_url(soup):
@@ -29,25 +29,36 @@ def get_brand_url(soup):
         key = brand.get("href")
         value_tmp = brand.find("span", class_="ui-search-search-modal-filter-match-count").text
         value = int(value_tmp.replace("(","").replace(")","").replace(",",""))
+
+        url = convert_url(key)
+
         if value > limit_car_per_brand:
             value = limit_car_per_brand
-        brand_href[key] = value
+        brand_href[url] = value
 
     return brand_href
 
 def price_section(soup):
     price_section = soup.find("span", class_="price-tag-fraction")
+
+    if price_section == None:
+        return None
+
     price = int(price_section.text.replace(",",""))
     return price
 
 # extract data on data_sheet
 def data_sheet(soup):
     data = {}
-    columns = soup.find("tbody", class_="andes-table__body").find_all("tr")
+    try: 
+        columns = soup.find("tbody", class_="andes-table__body").find_all("tr")
+    except: 
+        return data
 
     for row in columns:
         key = row.find("th").text
         value = row.find("td").text
+        print(key, value)
         data[key] = value
     
     return data
@@ -55,18 +66,35 @@ def data_sheet(soup):
 # WARNING comming soon
 def get_model(dict, title, brand):
   model = title.replace(brand, "")
+  print(model)
   for key in dict:
       if key == "Transmisión" or key == "Puertas":
           continue
       model = model.replace(dict[key], "")
-  return model.split()[0]
+  try:
+      return model.split()[0]
+  except: 
+      return model 
 
-def get_car_information(soup):
+def get_car_information(url):
+    response = requests.get(url)
+    vehicle_detail_page = response.text
+    soup = BeautifulSoup(vehicle_detail_page, "html.parser")
+
     picture_section = soup.find("img", class_="ui-pdp-image ui-pdp-gallery__figure__image")
 
     price = price_section(soup)
+
+    if picture_section == None:
+        return
+
     title = picture_section.get("alt")
+
+    if title == None:
+        return
+
     brand = title.split(" ")[0]
+
     mainPicture = picture_section.get("data-zoom")
     
     data_sheet_table = data_sheet(soup)
@@ -79,17 +107,27 @@ def get_car_information(soup):
        "model": model,
        "price": price, 
        "mainPicture": mainPicture,
-       "year": data_sheet_table[fields["year"]],
-       "fuelType": data_sheet_table[fields["fuelType"]],
-       "bodyStyle": data_sheet_table[fields["bodyStyle"]],
-       "transmission": data_sheet_table[fields["transmission"]],
-       "engine": data_sheet_table[fields["engine"]],
-       "doors": data_sheet_table[fields["doors"]],
-       "mileage": data_sheet_table[fields["mileage"]],
+       "year": key_error(data_sheet_table, "year"),
+       "fuelType": key_error(data_sheet_table, "fuelType"),
+       "bodyStyle": key_error(data_sheet_table, "bodyStyle"),
+       "transmission": key_error(data_sheet_table, "transmission"),
+       "engine": key_error(data_sheet_table, "engine"),
+       "doors": key_error(data_sheet_table, "doors"),
+       "mileage": key_error(data_sheet_table, "mileage"),
+       "color": key_error(data_sheet_table, "color"),
+       "vehicle_url": url,
     }
     
-    print(vehicle)
-    return vehicle
+    VehicleDataManager().addCar(vehicle)
+
+def key_error(data, key):
+    try:
+        if key == "year" or key == "mileage":
+            return int(data[fields[key]].replace(" km",""))
+        else:
+            return data[fields[key]]
+    except:
+        return None
 
 # Transform url
 def convert_url(url):
@@ -114,19 +152,26 @@ def get_array_of_url(url, value):
     return brand_url
 
 def get_car_url(key, value):
-    url = convert_url(key)
-    brand_specific_urls = get_array_of_url(url, value)
+    brand_specific_urls = get_array_of_url(key, value)
 
     for specific_page in brand_specific_urls:
         response = requests.get(specific_page)
         car_page = response.text
         soup = BeautifulSoup(car_page, "html.parser")
-        vehicle = get_car_information(soup)
-        vehicle["vehicle_url"] = specific_page
 
-        car = VehicleDataManager()
-        car.addCar(vehicle)
+        validator = soup.find("svg", class_="ui-search-icon ui-search-icon--not-found ui-search-rescue__icon")
+        
+        if validator != None:
+            break
 
+        urls = soup.find("section", class_="ui-search-results ui-search-results--without-disclaimer").find_all("li", class_="ui-search-layout__item")
+
+        for url in urls:
+            car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
+            get_car_information(car_url)
+           
+
+        
 #Vehicle data manager
 class VehicleDataManager():
     def __init__(self): 
@@ -137,8 +182,7 @@ class VehicleDataManager():
             db = self.connection[dbName]
             self.collection = db['Vehicles']
 
-    def addCar(self, vehiclePage):
-        vehicleObject = self.vehicleDataExtractor(vehiclePage)
+    def addCar(self, vehicleObject):
         self.collection.insert_one(vehicleObject)
 
 brand_url_and_count = get_brand_url(soup)
