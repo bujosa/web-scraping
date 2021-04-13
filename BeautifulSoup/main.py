@@ -58,15 +58,19 @@ def data_sheet(soup):
     for row in columns:
         key = row.find("th").text
         value = row.find("td").text
-        print(key, value)
         data[key] = value
     
     return data
 
 # WARNING comming soon
 def get_model(dict, title, brand):
+  if title == None:
+      return None
+
   model = title.replace(brand, "")
+
   print(model)
+
   for key in dict:
       if key == "Transmisión" or key == "Puertas":
           continue
