@@ -35,16 +35,6 @@ def get_brand_url(soup):
 
     return brand_href
 
-def get_car_url(key, value):
-    url = convert_url(key)
-    brand_specific_urls = get_array_of_url(url, value)
-
-    for specific_page in brand_specific_urls:
-        response = requests.get(specific_page)
-        car_page = response.text
-        soup = BeautifulSoup(car_page, "html.parser")
-        get_car_information(soup)
-
 def price_section(soup):
     price_section = soup.find("span", class_="price-tag-fraction")
     price = int(price_section.text.replace(",",""))
@@ -62,14 +52,14 @@ def data_sheet(soup):
     
     return data
 
-# transform and get model
+# WARNING comming soon
 def get_model(dict, title, brand):
   model = title.replace(brand, "")
   for key in dict:
       if key == "Transmisión" or key == "Puertas":
           continue
       model = model.replace(dict[key], "")
-  return model
+  return model.split()[0]
 
 def get_car_information(soup):
     picture_section = soup.find("img", class_="ui-pdp-image ui-pdp-gallery__figure__image")
@@ -123,6 +113,20 @@ def get_array_of_url(url, value):
     
     return brand_url
 
+def get_car_url(key, value):
+    url = convert_url(key)
+    brand_specific_urls = get_array_of_url(url, value)
+
+    for specific_page in brand_specific_urls:
+        response = requests.get(specific_page)
+        car_page = response.text
+        soup = BeautifulSoup(car_page, "html.parser")
+        vehicle = get_car_information(soup)
+        vehicle["vehicle_url"] = specific_page
+
+        car = VehicleDataManager()
+        car.addCar(vehicle)
+
 #Vehicle data manager
 class VehicleDataManager():
     def __init__(self): 
@@ -137,15 +141,7 @@ class VehicleDataManager():
         vehicleObject = self.vehicleDataExtractor(vehiclePage)
         self.collection.insert_one(vehicleObject)
 
-# brand_url_and_count = get_brand_url(soup)
+brand_url_and_count = get_brand_url(soup)
 
-# for key in brand_url_and_count:
-#     get_car_url(key, brand_url_and_count[key])
-
-response = requests.get("https://auto.mercadolibre.com.mx/MLM-891858876-mazda-cx-3-20-i-grand-touring-at-2016-_JM#position=47&type=item&tracking_id=bde0cb13-a342-4928-8705-6554ade7aa0f")
-
-mercadoLibre = response.text
-
-soup = BeautifulSoup(mercadoLibre, "html.parser")
-
-get_car_information(soup)
+for key in brand_url_and_count:
+    get_car_url(key, brand_url_and_count[key])
