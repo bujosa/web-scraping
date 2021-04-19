@@ -6,7 +6,7 @@ import math
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreMX'
-dbConnectionString = "mongodb+srv://eljevas:RBuQdrNXtDaJggE0@scrapercluster.hhqge.mongodb.net/<dbname>?retryWrites=true&w=majority"
+dbConnectionString = "YOUR_DATA_BASE_URI"
 
 # Request to mercado mercado libre mx
 response = requests.get("https://autos.mercadolibre.com.mx/_FiltersAvailableSidebar?filter=BRAND")
@@ -15,6 +15,7 @@ mercadoLibre = response.text
 
 soup = BeautifulSoup(mercadoLibre, "html.parser")
 
+# Constants variables
 max_vehicle_per_page = 48
 limit_car_per_brand = 1969
 
@@ -182,7 +183,7 @@ class VehicleDataManager():
             )
 
             db = self.connection[dbName]
-            self.collection = db['Cars2']
+            self.collection = db['Cars']
 
     def addCar(self, vehicleObject):
         self.collection.insert_one(vehicleObject)
