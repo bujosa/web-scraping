@@ -43,9 +43,9 @@ def convert_url(url):
     return result[0]
 
 def get_car_url(key, value):
-    brand_specific_urls = get_array_of_url(key, value)
+    year_specific_urls = get_array_of_url(key, value)
 
-    for specific_page in brand_specific_urls:
+    for specific_page in year_specific_urls:
         response = requests.get(specific_page)
         car_page = response.text
         soup = BeautifulSoup(car_page, "html.parser")
@@ -62,23 +62,75 @@ def get_car_url(key, value):
             get_car_information(car_url)
 
 def get_array_of_url(url, value):
-    brand_url = []
+    year_url = []
     last_part = "_Desde_"
-    brand_url.append(url)
+    year_url.append(url)
     count = value/max_vehicle_per_page
 
     if count < 1 or value == max_vehicle_per_page: 
-        return brand_url
+        return year_url
     else:
         count = math.floor(count)
         for x in range(count+1):
             number = str(x*max_vehicle_per_page + 1)
             last_part_tmp = url+last_part+number
-            brand_url.append(last_part_tmp)
+            year_url.append(last_part_tmp)
     
-    return brand_url
+    return year_url
 
+def get_car_information(url):
+    response = requests.get(url)
+    vehicle_detail_page = response.text
+    soup = BeautifulSoup(vehicle_detail_page, "html.parser")
 
+    picture_section = soup.find("img", class_="ui-pdp-image ui-pdp-gallery__figure__image")
+
+    # price = price_section(soup)
+
+    if picture_section == None:
+        return
+
+    title = picture_section.get("alt")
+
+    if title == None:
+        return
+
+    brand = title.split(" ")[0]
+
+    mainPicture = picture_section.get("data-zoom")
+    
+    # data_sheet_table = data_sheet(soup)
+    
+    # model = get_model(data_sheet_table, title, brand)
+
+    vehicle = {
+       "title":title, 
+       "brand": brand,
+       "model": model,
+       "price": price, 
+       "mainPicture": mainPicture,
+       "year": key_error(data_sheet_table, "year"),
+       "fuelType": key_error(data_sheet_table, "fuelType"),
+       "bodyStyle": key_error(data_sheet_table, "bodyStyle"),
+       "transmission": key_error(data_sheet_table, "transmission"),
+       "engine": key_error(data_sheet_table, "engine"),
+       "doors": key_error(data_sheet_table, "doors"),
+       "mileage": key_error(data_sheet_table, "mileage"),
+       "color": key_error(data_sheet_table, "color"),
+       "vehicle_url": url,
+    }
+    
+    VehicleDataManager().addCar(vehicle)
+
+def key_error(data, key):
+    try:
+        if key == "year" or key == "mileage":
+            return int(data[fields[key]].replace(" km",""))
+        else:
+            return data[fields[key]]
+    except:
+        return None
+        
 #Vehicle data manager
 class VehicleDataManager():
     def __init__(self): 
