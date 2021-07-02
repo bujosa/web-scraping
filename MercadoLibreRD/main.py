@@ -34,7 +34,7 @@ def get_year_url(soup):
 
         if value > limit_car_per_year:
             value = limit_car_per_year
-        year_href_href[url] = value
+        year_href[url] = value
 
     return year_href
 
@@ -55,7 +55,7 @@ def get_car_url(key, value):
         if validator != None:
             break
 
-        urls = soup.find("section", class_="ui-search-results ui-search-results--without-disclaimer").find_all("li", class_="ui-search-layout__item")
+        urls = soup.find("section", class_="ui-search-results").find_all("li", class_="ui-search-layout__item")
 
         for url in urls:
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
@@ -77,6 +77,24 @@ def get_array_of_url(url, value):
             year_url.append(last_part_tmp)
     
     return year_url
+
+def get_model(dict, title, brand):
+   if title == None:
+      return None
+
+  model = title.replace(brand, "")
+
+  print(model)
+
+  for key in dict:
+      if key == "Transmisión" or key == "Puertas":
+          continue
+      model = model.replace(dict[key], "")
+  try:
+      return model.split()[0]
+  except: 
+      return model 
+
 
 def get_car_information(url):
     response = requests.get(url)
@@ -100,7 +118,7 @@ def get_car_information(url):
     
     data_sheet_table = data_sheet(soup)
     
-    # model = get_model(data_sheet_table, title, brand)
+    model = get_model(data_sheet_table, title, brand)
 
     vehicle = {
        "title":title, 
@@ -119,7 +137,8 @@ def get_car_information(url):
        "vehicle_url": url,
     }
     
-    VehicleDataManager().addCar(vehicle)
+    print(vehicle)
+    # VehicleDataManager().addCar(vehicle)
 
 def data_sheet(soup):
     data = {}
@@ -134,7 +153,6 @@ def data_sheet(soup):
         data[key] = value
     
     return data
-
 
 def key_error(data, key):
     try:
