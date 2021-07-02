@@ -15,12 +15,15 @@ mercadoLibre = response.text
 
 soup = BeautifulSoup(mercadoLibre, "html.parser")
 
+#count
+count = 0
+
 # Constants variables
 max_vehicle_per_page = 48
 limit_car_per_year = 1969
 
 #Fields
-fields = { "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
+fields = { "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color", "dólares": "USD" , "pesos": "DOP"}
 
 def get_year_url(soup):
     year_href = {}
@@ -78,13 +81,47 @@ def get_array_of_url(url, value):
     
     return year_url
 
+def price_section(soup):
+    price_section = soup.find("span", class_="price-tag-text-sr-only")
+
+    if price_section == None:
+        return None
+    
+    keys = price_section.text.split(" ")
+    
+    price = int(keys[0])
+    currency = get_key(keys[1])
+    
+    if price > 200 and price < 999:
+        return price*1000, "DOP"
+
+    if price < 2000: 
+        return None, None
+
+    if price < 100000 and currency == "DOP": 
+        currency =  "USD"
+
+    return price, currency
+
+def days_section(soup):
+    title = soup.find("span", class_="ui-pdp-subtitle")
+
+    if title == None:
+        return None
+
+    date = title.text.split("Publicado hace ")[1]
+    keys = date.split(" ")
+
+    if keys[1] == 'días' :
+      return int(keys[0])
+    else:
+      return int(keys[0]) * 30
+
 def get_model(dict, title, brand):
   if title == None:
     return None
 
   model = title.replace(brand, "")
-
-  print(model)
 
   for key in dict:
       if key == "Transmisión" or key == "Puertas":
@@ -95,7 +132,6 @@ def get_model(dict, title, brand):
   except: 
       return model 
 
-
 def get_car_information(url):
     response = requests.get(url)
     vehicle_detail_page = response.text
@@ -103,10 +139,12 @@ def get_car_information(url):
 
     picture_section = soup.find("img", class_="ui-pdp-image ui-pdp-gallery__figure__image")
 
-    # price = price_section(soup)
+    price, currency = price_section(soup)
 
     if picture_section == None:
         return
+
+    originalMainPicture = picture_section.get("data-zoom")
 
     title = picture_section.get("alt")
 
@@ -115,17 +153,30 @@ def get_car_information(url):
 
     brand = title.split(" ")[0]
 
-    
+    days = days_section(soup)
+
+    if days > 60 :
+      return
+
     data_sheet_table = data_sheet(soup)
+
+    if data_sheet_table == {}:
+        return
     
     model = get_model(data_sheet_table, title, brand)
+
+    if price == None:
+        return
 
     vehicle = {
        "title":title, 
        "brand": brand,
        "model": model,
        "price": price, 
+       "currency": currency,
+       "age": days,
        "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
+       "originalMainPicture": originalMainPicture,
        "year": key_error(data_sheet_table, "year"),
        "fuelType": key_error(data_sheet_table, "fuelType"),
        "bodyStyle": key_error(data_sheet_table, "bodyStyle"),
@@ -136,9 +187,11 @@ def get_car_information(url):
        "color": key_error(data_sheet_table, "color"),
        "vehicle_url": url,
     }
-    
-    print(vehicle)
-    # VehicleDataManager().addCar(vehicle)
+
+    count +=1 
+    print(count)
+
+    VehicleDataManager().addCar(vehicle)
 
 def data_sheet(soup):
     data = {}
@@ -153,6 +206,9 @@ def data_sheet(soup):
         data[key] = value
     
     return data
+
+def get_key(key):
+    return fields[key]
 
 def key_error(data, key):
     try:
@@ -180,3 +236,4 @@ year_url_and_count = get_year_url(soup)
 
 for key in year_url_and_count:
     get_car_url(key, year_url_and_count[key])
+
