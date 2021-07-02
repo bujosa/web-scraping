@@ -97,9 +97,8 @@ def get_car_information(url):
 
     brand = title.split(" ")[0]
 
-    mainPicture = picture_section.get("data-zoom")
     
-    # data_sheet_table = data_sheet(soup)
+    data_sheet_table = data_sheet(soup)
     
     # model = get_model(data_sheet_table, title, brand)
 
@@ -108,7 +107,7 @@ def get_car_information(url):
        "brand": brand,
        "model": model,
        "price": price, 
-       "mainPicture": mainPicture,
+       "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
        "year": key_error(data_sheet_table, "year"),
        "fuelType": key_error(data_sheet_table, "fuelType"),
        "bodyStyle": key_error(data_sheet_table, "bodyStyle"),
@@ -121,6 +120,21 @@ def get_car_information(url):
     }
     
     VehicleDataManager().addCar(vehicle)
+
+def data_sheet(soup):
+    data = {}
+    try: 
+        columns = soup.find("tbody", class_="andes-table__body").find_all("tr")
+    except: 
+        return data
+
+    for row in columns:
+        key = row.find("th").text
+        value = row.find("td").text
+        data[key] = value
+    
+    return data
+
 
 def key_error(data, key):
     try:
