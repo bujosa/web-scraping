@@ -1,0 +1,9 @@
+#Eliminated env machine
+mercado-libre-rd
+
+# ec2 config
+*.ppk*
+
+
+# vscode config
+.vscode
