@@ -15,15 +15,14 @@ mercadoLibre = response.text
 
 soup = BeautifulSoup(mercadoLibre, "html.parser")
 
-#count
-count = 0
-
 # Constants variables
 max_vehicle_per_page = 48
 limit_car_per_year = 1969
 
 #Fields
-fields = { "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color", "dólares": "USD" , "pesos": "DOP"}
+fields = { "year":"Año", "brand": "Marca", "model": "Modelo", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color", "dólares": "USD" , "pesos": "DOP"}
+
+count = 0
 
 def get_year_url(soup):
     year_href = {}
@@ -167,6 +166,12 @@ def get_car_information(url):
 
     if price == None:
         return
+   
+    if key_error(data_sheet_table, "brand") != None:
+        brand = key_error(data_sheet_table, "brand")
+     
+    if key_error(data_sheet_table, "model") != None:
+        model = key_error(data_sheet_table, "model")
 
     vehicle = {
        "title":title, 
@@ -188,7 +193,8 @@ def get_car_information(url):
        "vehicle_url": url,
     }
 
-    count +=1 
+    global count
+    count += 1
     print(count)
 
     VehicleDataManager().addCar(vehicle)
