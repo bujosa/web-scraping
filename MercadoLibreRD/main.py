@@ -79,8 +79,8 @@ def get_array_of_url(url, value):
     return year_url
 
 def get_model(dict, title, brand):
-   if title == None:
-      return None
+  if title == None:
+    return None
 
   model = title.replace(brand, "")
 
