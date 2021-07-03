@@ -6,7 +6,7 @@ import math
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreRD'
-dbConnectionString = "mongodb+srv://scraper-admin:6PoJcLydol0XuLdX@freecluster.jg51j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+dbConnectionString = "YOUR_DATA_BASE_URL"
 
 # Request to mercado mercado libre mx
 response = requests.get("https://vehiculos.mercadolibre.com.do/_FiltersAvailableSidebar?filter=VEHICLE_YEAR")
