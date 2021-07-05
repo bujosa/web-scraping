@@ -1,8 +1,5 @@
 from bs4 import BeautifulSoup
 import requests
-import pymongo
-import dns
-import math
 
 class Corotos:
     __fields = { "year":"Año", "brand": "Marca", "model": "Modelo",
