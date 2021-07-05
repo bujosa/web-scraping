@@ -8,7 +8,7 @@ import math
 dbName = 'MercadoLibreRD'
 dbConnectionString = "YOUR_DATA_BASE_URL"
 
-# Request to mercado mercado libre mx
+# Request to mercado mercado libre RD
 response = requests.get("https://vehiculos.mercadolibre.com.do/_FiltersAvailableSidebar?filter=VEHICLE_YEAR")
 
 mercadoLibre = response.text
