@@ -75,9 +75,11 @@ def days_section(soup):
     date = title.text.split("Publicado hace ")[1]
     keys = date.split(" ")
 
-    if keys[1] == 'días' :
+    if keys[1] == 'días' or keys[1] == 'día' :
       return int(keys[0])
-    else:
+    elif keys[1] == "años":
+      return 365
+    else:  
       return int(keys[0]) * 30
 
 def get_car_information(url):
@@ -131,9 +133,14 @@ def get_car_information(url):
     }
 
     # vehicle brand and model validation
-    if vehicle.brand == None or vehicle.model == None:
+    if vehicle["brand"] == None or vehicle["model"] == None:
         return
     
+    global count
+    count += 1
+    print(count)
+    print(vehicle["vehicle_url"])
+
     VehicleDataManager().addCar(vehicle)
 
 def key_error(data, key):
@@ -179,7 +186,7 @@ def get_car_url(key, value):
         if validator != None:
             break
 
-        urls = soup.find("section", class_="ui-search-results ui-search-results--without-disclaimer").find_all("li", class_="ui-search-layout__item")
+        urls = soup.find("section", class_="ui-search-results").find_all("li", class_="ui-search-layout__item")
 
         for url in urls:
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
