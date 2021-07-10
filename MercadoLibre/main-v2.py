@@ -6,7 +6,7 @@ import math
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreMX'
-dbConnectionString = "YOUR_DATA_BASE_URI"
+dbConnectionString = "mongodb+srv://scraper-admin:6PoJcLydol0XuLdX@freecluster.jg51j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
 # Request to mercado mercado libre mx
 response = requests.get("https://autos.mercadolibre.com.mx/_FiltersAvailableSidebar?filter=BRAND")
@@ -20,7 +20,7 @@ max_vehicle_per_page = 48
 limit_car_per_brand = 1969
 
 #Fields
-fields = { "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
+fields = { "brand": "Marca", "model": "Modelo", "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
 
 # Get all the brand and find your url
 def get_brand_url(soup):
