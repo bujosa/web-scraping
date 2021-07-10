@@ -22,7 +22,11 @@ limit_car_per_brand = 1969
 #Fields
 fields = { "brand": "Marca", "model": "Modelo", "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
 
-# Get all the brand and find your url
+#blocked
+count = 0
+
+blocked = True
+
 def get_brand_url(soup):
     brand_href = {}
     brand_div = soup.find(class_="ui-search-search-modal-grid-columns").find_all("a", class_="ui-search-search-modal-filter ui-search-link")
@@ -48,7 +52,6 @@ def price_section(soup):
     price = int(price_section.text.replace(",",""))
     return price
 
-# extract data on data_sheet
 def data_sheet(soup):
     data = {}
     try: 
@@ -63,55 +66,59 @@ def data_sheet(soup):
     
     return data
 
-# WARNING comming soon
-def get_model(dict, title, brand):
-  if title == None:
-      return None
+def days_section(soup):
+    title = soup.find("span", class_="ui-pdp-subtitle")
 
-  model = title.replace(brand, "")
+    if title == None:
+        return None
 
-  print(model)
+    date = title.text.split("Publicado hace ")[1]
+    keys = date.split(" ")
 
-  for key in dict:
-      if key == "Transmisión" or key == "Puertas":
-          continue
-      model = model.replace(dict[key], "")
-  try:
-      return model.split()[0]
-  except: 
-      return model 
+    if keys[1] == 'días' :
+      return int(keys[0])
+    else:
+      return int(keys[0]) * 30
 
 def get_car_information(url):
     response = requests.get(url)
     vehicle_detail_page = response.text
     soup = BeautifulSoup(vehicle_detail_page, "html.parser")
 
+    # picture_section validation
     picture_section = soup.find("img", class_="ui-pdp-image ui-pdp-gallery__figure__image")
-
-    price = price_section(soup)
 
     if picture_section == None:
         return
 
+    # price_section validation
+    price = price_section(soup)
+
+    if price == None:
+        return
+
+    # days_section validation
+    days = days_section(soup)
+
+    if days > 60 :
+      return
+
+    # title_section validation
     title = picture_section.get("alt")
 
     if title == None:
         return
-
-    brand = title.split(" ")[0]
-
-    mainPicture = picture_section.get("data-zoom")
     
     data_sheet_table = data_sheet(soup)
-    
-    model = get_model(data_sheet_table, title, brand)
 
     vehicle = {
        "title":title, 
-       "brand": brand,
-       "model": model,
-       "price": price, 
-       "mainPicture": mainPicture,
+       "brand": key_error(data_sheet_table, "brand"),
+       "model":key_error(data_sheet_table, "model"),
+       "price": price,
+       "age": days,
+       "originalMainPicture":  picture_section.get("data-zoom"),
+       "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
        "year": key_error(data_sheet_table, "year"),
        "fuelType": key_error(data_sheet_table, "fuelType"),
        "bodyStyle": key_error(data_sheet_table, "bodyStyle"),
@@ -122,6 +129,10 @@ def get_car_information(url):
        "color": key_error(data_sheet_table, "color"),
        "vehicle_url": url,
     }
+
+    # vehicle brand and model validation
+    if vehicle.brand == None or vehicle.model == None:
+        return
     
     VehicleDataManager().addCar(vehicle)
 
@@ -134,7 +145,6 @@ def key_error(data, key):
     except:
         return None
 
-# Transform url
 def convert_url(url):
     result = url.split("?")
     return result[0]
