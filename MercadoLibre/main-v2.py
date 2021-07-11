@@ -22,11 +22,6 @@ limit_car_per_brand = 1969
 #Fields
 fields = { "brand": "Marca", "model": "Modelo", "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
 
-#blocked
-count = 0
-
-blocked = True
-
 def get_brand_url(soup):
     brand_href = {}
     brand_div = soup.find(class_="ui-search-search-modal-grid-columns").find_all("a", class_="ui-search-search-modal-filter ui-search-link")
