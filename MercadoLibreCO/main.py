@@ -6,7 +6,7 @@ import math
 import numpy as np
 
 # Database Name and db connection string to mongo atlas
-dbName = 'MercadoLibreMX'
+dbName = 'MercadoLibreCO'
 dbConnectionString = "YOUR_DATA_BASE"
 
 # Request to mercado mercado libre mx
@@ -147,7 +147,7 @@ def get_car_information(url):
     prices.append(vehicle["price"])
     years.append(vehicle["year"])
 
-    VehicleDataManager().addCar(vehicle)
+    # VehicleDataManager().addCar(vehicle)
 
 def key_error(data, key):
     try:
