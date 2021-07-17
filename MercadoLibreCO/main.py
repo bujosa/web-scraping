@@ -3,14 +3,14 @@ import requests
 import pymongo
 import dns
 import math
+import numpy as np
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreMX'
 dbConnectionString = "YOUR_DATA_BASE"
 
 # Request to mercado mercado libre mx
-response = requests.get("https://autos.mercadolibre.com.mx/_FiltersAvailableSidebar?filter=BRAND")
-
+response = requests.get("https://carros.tucarro.com.co/_FiltersAvailableSidebar?filter=MODEL")
 mercadoLibre = response.text
 
 soup = BeautifulSoup(mercadoLibre, "html.parser")
@@ -24,7 +24,10 @@ fields = { "brand": "Marca", "model": "Modelo", "year":"Año", "fuelType": "Tipo
 
 count = 0
 
-def get_brand_url(soup):
+prices = []
+years = []
+
+def get_model_url(soup):
     brand_href = {}
     brand_div = soup.find(class_="ui-search-search-modal-grid-columns").find_all("a", class_="ui-search-search-modal-filter ui-search-link")
     for brand in brand_div:
@@ -138,6 +141,12 @@ def get_car_information(url):
     print(count)
     print(vehicle["vehicle_url"])
 
+    global prices
+    global years
+
+    prices.append(vehicle["price"])
+    years.append(vehicle["year"])
+
     VehicleDataManager().addCar(vehicle)
 
 def key_error(data, key):
@@ -202,7 +211,16 @@ class VehicleDataManager():
     def addCar(self, vehicleObject):
         self.collection.insert_one(vehicleObject)
 
-brand_url_and_count = get_brand_url(soup)
+model_url_and_count = get_model_url(soup)
 
-for key in brand_url_and_count:
-    get_car_url(key, brand_url_and_count[key])
+for key in model_url_and_count:
+    get_car_url(key, model_url_and_count[key])
+
+# mean of prices
+mean_price = np.mean(prices)
+
+# mean of years
+mean_year = np.mean(years)
+
+print("Mean prices:", mean_price)
+print("Mean years:", mean_year)
