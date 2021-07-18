@@ -144,8 +144,8 @@ def get_car_information(url):
     global prices
     global years
 
-    prices.append(vehicle["price"])
-    years.append(vehicle["year"])
+    prices.append(int(vehicle["price"]))
+    years.append(int(vehicle["year"]))
 
     # VehicleDataManager().addCar(vehicle)
 
@@ -217,10 +217,16 @@ for key in model_url_and_count:
     get_car_url(key, model_url_and_count[key])
 
 # mean of prices
-mean_price = np.mean(prices)
+mean_price = np.mean(prices, dtype=np.int64)
 
 # mean of years
-mean_year = np.mean(years)
+mean_year = np.mean(years, dtype=np.int64)
+
+median_price = np.median(prices)
+
+median_year = np.median(years)
 
 print("Mean prices:", mean_price)
 print("Mean years:", mean_year)
+print("Median prices:", median_price)
+print("Median years:", median_year)
