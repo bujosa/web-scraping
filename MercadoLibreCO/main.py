@@ -147,7 +147,7 @@ def get_car_information(url):
     prices.append(int(vehicle["price"]))
     years.append(int(vehicle["year"]))
 
-    # VehicleDataManager().addCar(vehicle)
+    VehicleDataManager().addCar(vehicle)
 
 def key_error(data, key):
     try:
