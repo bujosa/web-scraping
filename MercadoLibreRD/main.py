@@ -6,7 +6,7 @@ import math
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreRD'
-dbConnectionString = "YOUR_DATA_BASE_URL"
+dbConnectionString = "YOUR_DATA_BASE"
 
 # Request to mercado mercado libre RD
 response = requests.get("https://vehiculos.mercadolibre.com.do/_FiltersAvailableSidebar?filter=VEHICLE_YEAR")
@@ -111,9 +111,11 @@ def days_section(soup):
     date = title.text.split("Publicado hace ")[1]
     keys = date.split(" ")
 
-    if keys[1] == 'días' :
-      return int(keys[0])
-    else:
+    if keys[1] == 'días' or keys[1] == 'día' :
+          return int(keys[0])
+    elif keys[1] == "año" or keys[1] == 'años' :
+      return int(keys[0]) * 365
+    else:  
       return int(keys[0]) * 30
 
 def get_model(dict, title, brand):
@@ -154,7 +156,7 @@ def get_car_information(url):
 
     days = days_section(soup)
 
-    if days > 60 :
+    if days > 30:
       return
 
     data_sheet_table = data_sheet(soup)
