@@ -7,7 +7,7 @@ import numpy as np
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreCO'
-dbConnectionString = "YOUR_DATA_BASE"
+dbConnectionString = "YOUR_DATA_BASE_URL"
 
 # Request to mercado mercado libre mx
 response = requests.get("https://carros.tucarro.com.co/_FiltersAvailableSidebar?filter=MODEL")
@@ -49,8 +49,9 @@ def price_section(soup):
     if price_section == None:
         return None
 
-    price = int(price_section.text.replace(",",""))
-    return price
+    price  = price_section.text.replace(",","")
+    price = price.replace(".","")
+    return int(price)
 
 def data_sheet(soup):
     data = {}
@@ -76,9 +77,9 @@ def days_section(soup):
     keys = date.split(" ")
 
     if keys[1] == 'días' or keys[1] == 'día' :
-      return int(keys[0])
-    elif keys[1] == "años":
-      return 365
+          return int(keys[0])
+    elif keys[1] == "año" or keys[1] == 'años' :
+      return int(keys[0]) * 365
     else:  
       return int(keys[0]) * 30
 
@@ -102,7 +103,7 @@ def get_car_information(url):
     # days_section validation
     days = days_section(soup)
 
-    if days > 60 :
+    if days > 30 :
       return
 
     # title_section validation
