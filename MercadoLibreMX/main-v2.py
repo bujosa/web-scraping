@@ -6,7 +6,7 @@ import math
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreMX'
-dbConnectionString = "YOUR_DATA_BASE"
+dbConnectionString = "YOUR_DATA_BASE_URL"
 
 # Request to mercado mercado libre mx
 response = requests.get("https://autos.mercadolibre.com.mx/_FiltersAvailableSidebar?filter=BRAND")
@@ -73,9 +73,9 @@ def days_section(soup):
     keys = date.split(" ")
 
     if keys[1] == 'días' or keys[1] == 'día' :
-      return int(keys[0])
-    elif keys[1] == "años":
-      return 365
+          return int(keys[0])
+    elif keys[1] == "año" or keys[1] == 'años' :
+      return int(keys[0]) * 365
     else:  
       return int(keys[0]) * 30
 
@@ -99,7 +99,7 @@ def get_car_information(url):
     # days_section validation
     days = days_section(soup)
 
-    if days > 60 :
+    if days > 30 :
       return
 
     # title_section validation
@@ -183,12 +183,18 @@ def get_car_url(key, value):
         if validator != None:
             break
 
-        urls = soup.find("section", class_="ui-search-results").find_all("li", class_="ui-search-layout__item")
+        urls = soup.find("section", class_="ui-search-results")
+
+        if urls == None:
+            break
+        else:
+            urls = urls.find_all("li", class_="ui-search-layout__item")
 
         for url in urls:
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
             get_car_information(car_url)
-              
+            
+          
 #Vehicle data manager
 class VehicleDataManager():
     def __init__(self): 
