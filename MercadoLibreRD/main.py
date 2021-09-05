@@ -57,7 +57,12 @@ def get_car_url(key, value):
         if validator != None:
             break
 
-        urls = soup.find("section", class_="ui-search-results").find_all("li", class_="ui-search-layout__item")
+        urls = soup.find("section", class_="ui-search-results")
+
+        if urls == None:
+            break
+        else:
+            urls = urls.find_all("li", class_="ui-search-layout__item")
 
         for url in urls:
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
