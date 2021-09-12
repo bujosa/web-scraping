@@ -11,6 +11,8 @@ dbConnectionString = "YOUR_DATA_BASE_URL"
 
 # Request to mercado mercado libre mx
 response = requests.get("https://carros.tucarro.com.co/_FiltersAvailableSidebar?filter=MODEL")
+
+#Page
 mercadoLibre = response.text
 
 soup = BeautifulSoup(mercadoLibre, "html.parser")
