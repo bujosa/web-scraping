@@ -22,8 +22,8 @@ limit_car_per_brand = 1969
 #Fields
 fields = { "brand": "Marca", "model": "Modelo", "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
 
+#Variables
 count = 0
-
 prices = []
 years = []
 
