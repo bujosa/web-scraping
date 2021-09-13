@@ -8,10 +8,10 @@ from datetime import timedelta
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreMX'
-dbConnectionString = "YOUR_DATA_BASE_URL"
+dbConnectionString = "mongodb+srv://scraper-admin:6PoJcLydol0XuLdX@freecluster.jg51j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
 # Request to mercado mercado libre mx
-response = requests.get("https://autos.mercadolibre.com.mx/_FiltersAvailableSidebar?filter=BRAND")
+response = requests.get("https://autos.mercadolibre.com.mx/distrito-federal/_FiltersAvailableSidebar?filter=BRAND")
 
 mercadoLibre = response.text
 
@@ -24,6 +24,14 @@ limit_car_per_brand = 1969
 #Fields
 fields = { "brand": "Marca", "model": "Modelo", "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
 count = 0
+
+def state_section(soup):
+    try: 
+        state = soup.findAll("p", class_="ui-seller-info__status-info__subtitle")[1].text
+        array = state.split(" - ")
+        return array.pop()
+    except:
+        return ''
 
 def get_brand_url(soup):
     brand_href = {}
@@ -113,6 +121,8 @@ def get_car_information(url):
 
     postCreatedAt = datetime.now() - timedelta(days=days)
 
+    state = state_section(soup)
+
     vehicle = {
        "title":title, 
        "brand": key_error(data_sheet_table, "brand"),
@@ -129,6 +139,8 @@ def get_car_information(url):
        "mileage": key_error(data_sheet_table, "mileage"),
        "color": key_error(data_sheet_table, "color"),
        "vehicle_url": url,
+       "country": "Mexico",
+       "state": state,
        "createdAt": datetime.now().isoformat(),
        "postCreatedAt":  postCreatedAt.isoformat(), 
     }
@@ -198,7 +210,8 @@ def get_car_url(key, value):
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
             get_car_information(car_url)
             
-          
+
+                      
 #Vehicle data manager
 class VehicleDataManager():
     def __init__(self): 
@@ -207,7 +220,7 @@ class VehicleDataManager():
             )
 
             db = self.connection[dbName]
-            self.collection = db['Cars']
+            self.collection = db['Vehicles']
 
     def addCar(self, vehicleObject):
         self.collection.insert_one(vehicleObject)
