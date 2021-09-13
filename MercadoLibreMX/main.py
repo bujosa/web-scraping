@@ -8,7 +8,7 @@ from datetime import timedelta
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreMX'
-dbConnectionString = "mongodb+srv://scraper-admin:6PoJcLydol0XuLdX@freecluster.jg51j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+dbConnectionString = "DATA_BASE_URL"
 
 # Request to mercado mercado libre mx
 response = requests.get("https://autos.mercadolibre.com.mx/distrito-federal/_FiltersAvailableSidebar?filter=BRAND")
