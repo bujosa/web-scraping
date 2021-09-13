@@ -3,6 +3,8 @@ import requests
 import pymongo
 import dns
 import math
+from datetime import datetime
+from datetime import timedelta
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreMX'
@@ -21,7 +23,6 @@ limit_car_per_brand = 1969
 
 #Fields
 fields = { "brand": "Marca", "model": "Modelo", "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
-
 count = 0
 
 def get_brand_url(soup):
@@ -99,7 +100,7 @@ def get_car_information(url):
     # days_section validation
     days = days_section(soup)
 
-    if days > 30 :
+    if days > 7 :
       return
 
     # title_section validation
@@ -110,12 +111,13 @@ def get_car_information(url):
     
     data_sheet_table = data_sheet(soup)
 
+    postCreatedAt = datetime.now() - timedelta(days=days)
+
     vehicle = {
        "title":title, 
        "brand": key_error(data_sheet_table, "brand"),
        "model":key_error(data_sheet_table, "model"),
        "price": price,
-       "age": days,
        "originalMainPicture":  picture_section.get("data-zoom"),
        "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
        "year": key_error(data_sheet_table, "year"),
@@ -127,6 +129,8 @@ def get_car_information(url):
        "mileage": key_error(data_sheet_table, "mileage"),
        "color": key_error(data_sheet_table, "color"),
        "vehicle_url": url,
+       "createdAt": datetime.now().isoformat(),
+       "postCreatedAt":  postCreatedAt.isoformat(), 
     }
 
     # vehicle brand and model validation
