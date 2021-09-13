@@ -6,7 +6,7 @@ import math
 
 # Database Name and db connection string to mongo atlas
 dbName = 'MercadoLibreMX'
-dbConnectionString = "YOUR_DATA_BASE_URI"
+dbConnectionString = "YOUR_DATA_BASE_URL"
 
 # Request to mercado mercado libre mx
 response = requests.get("https://autos.mercadolibre.com.mx/_FiltersAvailableSidebar?filter=BRAND")
@@ -20,9 +20,10 @@ max_vehicle_per_page = 48
 limit_car_per_brand = 1969
 
 #Fields
-fields = { "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
+fields = { "brand": "Marca", "model": "Modelo", "year":"Año", "fuelType": "Tipo de combustible", "transmission": "Transmisión", "bodyStyle": "Tipo de carrocería",  "doors":"Puertas",  "engine": "Motor",  "mileage": "Kilómetros", "color": "Color"}
 
-# Get all the brand and find your url
+count = 0
+
 def get_brand_url(soup):
     brand_href = {}
     brand_div = soup.find(class_="ui-search-search-modal-grid-columns").find_all("a", class_="ui-search-search-modal-filter ui-search-link")
@@ -48,7 +49,6 @@ def price_section(soup):
     price = int(price_section.text.replace(",",""))
     return price
 
-# extract data on data_sheet
 def data_sheet(soup):
     data = {}
     try: 
@@ -63,55 +63,61 @@ def data_sheet(soup):
     
     return data
 
-# WARNING comming soon
-def get_model(dict, title, brand):
-  if title == None:
-      return None
+def days_section(soup):
+    title = soup.find("span", class_="ui-pdp-subtitle")
 
-  model = title.replace(brand, "")
+    if title == None:
+        return None
 
-  print(model)
+    date = title.text.split("Publicado hace ")[1]
+    keys = date.split(" ")
 
-  for key in dict:
-      if key == "Transmisión" or key == "Puertas":
-          continue
-      model = model.replace(dict[key], "")
-  try:
-      return model.split()[0]
-  except: 
-      return model 
+    if keys[1] == 'días' or keys[1] == 'día' :
+          return int(keys[0])
+    elif keys[1] == "año" or keys[1] == 'años' :
+      return int(keys[0]) * 365
+    else:  
+      return int(keys[0]) * 30
 
 def get_car_information(url):
     response = requests.get(url)
     vehicle_detail_page = response.text
     soup = BeautifulSoup(vehicle_detail_page, "html.parser")
 
+    # picture_section validation
     picture_section = soup.find("img", class_="ui-pdp-image ui-pdp-gallery__figure__image")
-
-    price = price_section(soup)
 
     if picture_section == None:
         return
 
+    # price_section validation
+    price = price_section(soup)
+
+    if price == None:
+        return
+
+    # days_section validation
+    days = days_section(soup)
+
+    if days > 30 :
+      return
+
+    # title_section validation
     title = picture_section.get("alt")
 
     if title == None:
         return
-
-    brand = title.split(" ")[0]
-
-    mainPicture = picture_section.get("data-zoom")
     
     data_sheet_table = data_sheet(soup)
-    
-    model = get_model(data_sheet_table, title, brand)
 
     vehicle = {
        "title":title, 
-       "brand": brand,
-       "model": model,
-       "price": price, 
-       "mainPicture": mainPicture,
+       "brand": key_error(data_sheet_table, "brand"),
+       "model":key_error(data_sheet_table, "model"),
+       "price": price,
+       "age": days,
+       "originalMainPicture":  picture_section.get("data-zoom"),
+       "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
        "year": key_error(data_sheet_table, "year"),
        "fuelType": key_error(data_sheet_table, "fuelType"),
        "bodyStyle": key_error(data_sheet_table, "bodyStyle"),
@@ -122,7 +128,16 @@ def get_car_information(url):
        "color": key_error(data_sheet_table, "color"),
        "vehicle_url": url,
     }
+
+    # vehicle brand and model validation
+    if vehicle["brand"] == None or vehicle["model"] == None:
+        return
     
+    global count
+    count += 1
+    print(count)
+    print(vehicle["vehicle_url"])
+
     VehicleDataManager().addCar(vehicle)
 
 def key_error(data, key):
@@ -134,7 +149,6 @@ def key_error(data, key):
     except:
         return None
 
-# Transform url
 def convert_url(url):
     result = url.split("?")
     return result[0]
@@ -169,12 +183,18 @@ def get_car_url(key, value):
         if validator != None:
             break
 
-        urls = soup.find("section", class_="ui-search-results ui-search-results--without-disclaimer").find_all("li", class_="ui-search-layout__item")
+        urls = soup.find("section", class_="ui-search-results")
+
+        if urls == None:
+            break
+        else:
+            urls = urls.find_all("li", class_="ui-search-layout__item")
 
         for url in urls:
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
             get_car_information(car_url)
-              
+            
+          
 #Vehicle data manager
 class VehicleDataManager():
     def __init__(self): 
