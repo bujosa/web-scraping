@@ -114,6 +114,7 @@ def get_car_information(url):
        "brand": key_error(data_sheet_table, "brand"),
        "model":key_error(data_sheet_table, "model"),
        "price": price,
+       "currency": "COP"
        "originalMainPicture":  picture_section.get("data-zoom"),
        "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
        "year": key_error(data_sheet_table, "year"),
@@ -125,6 +126,10 @@ def get_car_information(url):
        "mileage": key_error(data_sheet_table, "mileage"),
        "color": key_error(data_sheet_table, "color"),
        "vehicle_url": url,
+       "country": "Colombia",
+       "state": state_section(soup),
+       "createdAt": datetime.now().isoformat(),
+       "postCreatedAt":  (datetime.now() - timedelta(days=days)).isoformat(),
     }
 
     # vehicle brand and model validation
