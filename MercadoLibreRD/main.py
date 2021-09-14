@@ -252,7 +252,7 @@ def state_section(soup):
 class VehicleDataManager():
     def __init__(self): 
             self.connection = pymongo.MongoClient(
-                dbConnectionString
+                ""
             )
 
             db = self.connection["MercadoLibreRD"]
