@@ -4,6 +4,8 @@ import pymongo
 import dns
 import math
 import numpy as np
+from datetime import datetime
+from datetime import timedelta
 
 # Request to mercado mercado libre mx
 response = requests.get("https://carros.tucarro.com.co/_FiltersAvailableSidebar?filter=MODEL")
@@ -112,7 +114,6 @@ def get_car_information(url):
        "brand": key_error(data_sheet_table, "brand"),
        "model":key_error(data_sheet_table, "model"),
        "price": price,
-       "age": days,
        "originalMainPicture":  picture_section.get("data-zoom"),
        "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
        "year": key_error(data_sheet_table, "year"),
