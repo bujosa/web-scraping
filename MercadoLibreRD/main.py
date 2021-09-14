@@ -134,6 +134,10 @@ def get_car_information(url):
        "postCreatedAt":  (datetime.now() - timedelta(days=days)).isoformat(),
     }
 
+    # vehicle brand and model validation
+    if vehicle["brand"] == None or vehicle["model"] == None:
+        return
+
     global count
     count += 1
     print(count)
@@ -231,7 +235,7 @@ def price_section(soup):
         return price*1000, "DOP"
 
     if price < 2000: 
-        return None, None
+        return None
 
     if price < 100000 and currency == "DOP": 
         currency =  "USD"
