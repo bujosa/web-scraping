@@ -116,7 +116,6 @@ def get_car_information(url):
        "model": model,
        "price": price, 
        "currency": currency,
-       "age": days,
        "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
        "originalMainPicture": picture_section.get("data-zoom"),
        "year": key_error(data_sheet_table, "year"),
@@ -237,7 +236,7 @@ def price_section(soup):
         return price*1000, "DOP"
 
     if price < 2000: 
-        return None
+        return None, None
 
     if price < 100000 and currency == "DOP": 
         currency =  "USD"
@@ -247,20 +246,18 @@ def price_section(soup):
 # This function is used to get the state of the car
 def state_section(soup):
     try: 
-        seller_info = soup.findAll("p", class_="ui-seller-info__status-info")
+        seller_info = soup.findAll("div", class_="ui-seller-info__status-info")
         for seller_info_status in seller_info:
             title = seller_info_status.find("h3", class_="ui-seller-info__status-info__title ui-vip-seller-profile__title").text
             if title == "Ubicación del vehículo":
-                return seller_info_status.find("p", class_="ui-seller-info__status-info__subtitle").text
+                return seller_info_status.find("p", class_="ui-seller-info__status-info__subtitle").text.split(" - ")[1]
     except:
         return ''
 
 #Vehicle data manager class
 class VehicleDataManager():
     def __init__(self): 
-            self.connection = pymongo.MongoClient(
-                ""
-            )
+            self.connection = pymongo.MongoClient("YOUR_DATABASE_URI")
 
             db = self.connection["MercadoLibreRD"]
             self.collection = db['Vehicles']
