@@ -211,6 +211,7 @@ def get_year_url(soup):
 
     return year_href
 
+# This function is used to get data from the data sheet
 def key_error(data, key):
     try:
         if key == "year" or key == "mileage":
@@ -220,6 +221,7 @@ def key_error(data, key):
     except:
         return None
         
+# This function is used to get the price of the car and the currency
 def price_section(soup):
     price_section = soup.find("span", class_="price-tag-text-sr-only")
 
@@ -242,6 +244,7 @@ def price_section(soup):
 
     return price, currency
 
+# This function is used to get the state of the car
 def state_section(soup):
     try: 
         seller_info = soup.findAll("p", class_="ui-seller-info__status-info")
