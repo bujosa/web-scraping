@@ -114,7 +114,7 @@ def get_car_information(url):
        "brand": key_error(data_sheet_table, "brand"),
        "model":key_error(data_sheet_table, "model"),
        "price": price,
-       "currency": "COP"
+       "currency": "COP",
        "originalMainPicture":  picture_section.get("data-zoom"),
        "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
        "year": key_error(data_sheet_table, "year"),
@@ -217,7 +217,7 @@ def state_section(soup):
 #Vehicle data manager class
 class VehicleDataManager():
     def __init__(self): 
-            self.connection = pymongo.MongoClient("YOUR_DATA_BASE_URI")
+            self.connection = pymongo.MongoClient("mongodb+srv://scraper-admin:6PoJcLydol0XuLdX@freecluster.jg51j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
             db = self.connection['MercadoLibreCO']
             self.collection = db['Vehicles']
 
