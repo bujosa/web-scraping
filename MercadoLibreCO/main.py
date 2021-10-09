@@ -13,6 +13,7 @@ response = requests.get("https://carros.tucarro.com.co/_FiltersAvailableSidebar?
 #Page
 mercadoLibre = response.text
 
+#BeastifulSoup page parse on html
 soup = BeautifulSoup(mercadoLibre, "html.parser")
 
 # Constants variables
