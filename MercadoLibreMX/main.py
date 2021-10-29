@@ -108,7 +108,7 @@ def get_car_information(url):
     # days_section validation
     days = days_section(soup)
 
-    if days > 7 :
+    if days > 1 :
       return
 
     # title_section validation
