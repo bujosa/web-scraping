@@ -27,9 +27,11 @@ count = 0
 
 def state_section(soup):
     try: 
-        state = soup.findAll("p", class_="ui-seller-info__status-info__subtitle")[1].text
-        array = state.split(" - ")
-        return array.pop()
+        seller_info = soup.findAll("div", class_="ui-seller-info__status-info")
+        for seller_info_status in seller_info:
+            title = seller_info_status.find("h3", class_="ui-seller-info__status-info__title ui-vip-seller-profile__title").text
+            if title == "Ubicación del vehículo":
+                return seller_info_status.find("p", class_="ui-seller-info__status-info__subtitle").text.split(" - ")[1]
     except:
         return ''
 
