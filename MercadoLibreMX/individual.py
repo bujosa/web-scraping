@@ -42,6 +42,14 @@ def get_seller(soup):
     except:
         return ''
 
+def get_seller_type(soup):
+    try:
+        sellerType = soup.find("p", class_="ui-pdp-color--GRAY ui-pdp-family--REGULAR ui-vip-profile-info__subtitle").text
+        return sellerType
+    except:
+        return 'Particular'
+
+
 def get_brand_url(soup):
     brand_href = {}
     brand_div = soup.find(class_="ui-search-search-modal-grid-columns").find_all("a", class_="ui-search-search-modal-filter ui-search-link")
