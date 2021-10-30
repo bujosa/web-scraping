@@ -35,6 +35,13 @@ def state_section(soup):
    except:
         return ''
 
+def get_seller(soup):
+    try:
+        seller = soup.find("h3", class_="ui-pdp-color--BLACK ui-pdp-size--LARGE ui-pdp-family--REGULAR").text
+        return seller
+    except:
+        return ''
+
 def get_brand_url(soup):
     brand_href = {}
     brand_div = soup.find(class_="ui-search-search-modal-grid-columns").find_all("a", class_="ui-search-search-modal-filter ui-search-link")
@@ -143,6 +150,8 @@ def get_car_information(url):
        "vehicle_url": url,
        "country": "Mexico",
        "state": state,
+       "seller": get_seller(soup),
+       "sellerType": get_seller_type(soup),
        "createdAt": datetime.now().isoformat(),
        "postCreatedAt":  postCreatedAt.isoformat(), 
     }
