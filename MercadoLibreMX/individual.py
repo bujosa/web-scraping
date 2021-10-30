@@ -11,7 +11,7 @@ dbName = 'MercadoLibreMX'
 dbConnectionString = ""
 
 # Request to mercado mercado libre mx
-response = requests.get("https://autos.mercadolibre.com.mx/distrito-federal/_FiltersAvailableSidebar?filter=BRAND")
+response = requests.get("https://autos.mercadolibre.com.mx/distrito-federal/trato-directo/_FiltersAvailableSidebar?filter=BRAND")
 
 mercadoLibre = response.text
 
@@ -212,8 +212,7 @@ def get_car_url(key, value):
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
             get_car_information(car_url)
             
-
-                      
+            
 #Vehicle data manager
 class VehicleDataManager():
     def __init__(self): 
