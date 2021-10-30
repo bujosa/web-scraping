@@ -221,7 +221,7 @@ class VehicleDataManager():
             )
 
             db = self.connection[dbName]
-            self.collection = db['Onil']
+            self.collection = db['Individual']
 
     def addCar(self, vehicleObject):
         self.collection.insert_one(vehicleObject)
