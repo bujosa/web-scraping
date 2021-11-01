@@ -7,7 +7,7 @@ from datetime import datetime
 from datetime import timedelta
 
 # Request to mercado mercado libre RD
-response = requests.get("https://vehiculos.mercadolibre.com.do/_FiltersAvailableSidebar?filter=VEHICLE_YEAR")
+response = requests.get("https://carros.mercadolibre.com.do/autos-camionetas/_FiltersAvailableSidebar?filter=VEHICLE_YEAR")
 
 mercadoLibre = response.text
 
@@ -96,9 +96,15 @@ def get_car_information(url):
         return
 
     days = days_section(soup)
+    
+    if days > 5:
+        return
 
-    if days > 15:
-      return
+    sellerType = get_seller_type(soup)
+
+    print(sellerType)
+    if sellerType != 'Particular':
+        return
 
     data_sheet_table = data_sheet(soup)
 
@@ -129,6 +135,8 @@ def get_car_information(url):
        "vehicle_url": url,
        "country": "Republica Dominicana",
        "state": state_section(soup),
+       "seller": get_seller(soup),
+       "sellerType": sellerType,
        "createdAt": datetime.now().isoformat(),
        "postCreatedAt":  (datetime.now() - timedelta(days=days)).isoformat(),
     }
@@ -271,10 +279,9 @@ def state_section(soup):
 #Vehicle data manager class
 class VehicleDataManager():
     def __init__(self): 
-            self.connection = pymongo.MongoClient("YOUR_DATABASE_URI")
-
+            self.connection = pymongo.MongoClient("YOUR_MONGO_CLIENT_URL")
             db = self.connection["MercadoLibreRD"]
-            self.collection = db['Vehicles']
+            self.collection = db['Individual']
 
     def addCar(self, vehicleObject):
         self.collection.insert_one(vehicleObject)
