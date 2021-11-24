@@ -163,15 +163,27 @@ def get_car_url(key, value):
         if validator != None:
             break
 
-        urls = soup.find("section", class_="ui-search-results").find_all("li", class_="ui-search-layout__item")
+        urls = soup.find("section", class_="ui-search-results")
+
+        if urls == None:
+            break
+        else:
+            urls = urls.find_all("li", class_="ui-search-layout__item")
 
         for url in urls:
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
             get_car_information(car_url)
 
-def get_model_url(soup):
+def get_selection_urls(soup):
     brand_href = {}
-    brand_div = soup.find(class_="ui-search-search-modal-grid-columns").find_all("a", class_="ui-search-search-modal-filter ui-search-link")
+    
+    brand_div = soup.find(class_="ui-search-search-modal-grid-columns")
+
+    if brand_div == None:
+        return brand_href
+    else:
+        brand_div = brand_div.find_all("a", class_="ui-search-search-modal-filter ui-search-link")
+
     for brand in brand_div:
         key = brand.get("href")
         value_tmp = brand.find("span", class_="ui-search-search-modal-filter-match-count").text
@@ -239,7 +251,7 @@ class VehicleDataManager():
     def addCar(self, vehicleObject):
         self.collection.insert_one(vehicleObject)
 
-model_url_and_count = get_model_url(soup)
+selection_url_and_count = get_selection_urls(soup)
 
-for key in model_url_and_count:
-    get_car_url(key, model_url_and_count[key])
+for key in selection_url_and_count:
+    get_car_url(key, selection_url_and_count[key])
