@@ -8,7 +8,7 @@ from datetime import datetime
 from datetime import timedelta
 
 # Request to mercado mercado libre colombia
-response = requests.get("https://carros.tucarro.com.co/_FiltersAvailableSidebar?filter=MODEL")
+response = requests.get("https://carros.tucarro.com.co/directo/_FiltersAvailableSidebar?filter=MODEL")
 
 #Page
 mercadoLibre = response.text
