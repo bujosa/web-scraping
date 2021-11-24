@@ -244,7 +244,7 @@ def state_section(soup):
 #Vehicle data manager class
 class VehicleDataManager():
     def __init__(self): 
-            self.connection = pymongo.MongoClient("mongodb+srv://scraper-admin:6PoJcLydol0XuLdX@freecluster.jg51j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+            self.connection = pymongo.MongoClient("YOUR_DATA_BASE")
             db = self.connection['MercadoLibreCO']
             self.collection = db['Direct']
 
