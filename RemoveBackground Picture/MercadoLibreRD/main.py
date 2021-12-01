@@ -296,6 +296,10 @@ def state_section(soup):
     except:
         return ''
 
+def remove_background_picture(url):
+    requests.post("YOUR API", data={url} ,headers={"Authorization": "Your Token"})
+
+
 #Vehicle data manager class
 class VehicleDataManager():
     def __init__(self): 
