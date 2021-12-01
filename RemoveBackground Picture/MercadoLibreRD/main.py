@@ -184,8 +184,8 @@ def get_car_url(key, value):
 
 # This function is used to get pictures from the gallery and get the number of pictures
 def get_gallery_pictures(soup):
+    pictures = []
     try:
-        pictures = []
         gallery_pictures = soup.find("div", class_="ui-pdp-gallery__column").find_all("span", class_="ui-pdp-gallery__wrapper")
         for picture in gallery_pictures:
             pictures.append(picture.find("img", class_="ui-pdp-image").get("data-src").replace("R.jpg", "F.jpg").replace("O.jpg", "F.jpg"))
@@ -194,7 +194,7 @@ def get_gallery_pictures(soup):
             return pictures[0:4], len(pictures)
         return pictures, len(pictures)
     except:
-        return []
+        return [], len(pictures)
 
 def get_key(key):
     return fields[key]
