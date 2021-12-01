@@ -85,11 +85,9 @@ def get_car_information(url):
     
     pictures = get_gallery_pictures(soup)
 
-    print(pictures)
-
-    replace_text = "Imagen 1 de " + str(len(pictures))
+    replace_text = "Imagen 1 de " + str(len(pictures)) + " de "
     
-    title = picture_section.get("alt").replace(replace_text, "")
+    title = picture_section.get("alt").replace(replace_text, "").replace("  ", " ")
 
     if title == None:
         return
@@ -187,7 +185,7 @@ def get_gallery_pictures(soup):
         pictures = []
         gallery_pictures = soup.find("div", class_="ui-pdp-gallery__column").find_all("span", class_="ui-pdp-gallery__wrapper")
         for picture in gallery_pictures:
-            picture = picture.find("img", class_="ui-pdp-image").get("data-src").replace("R.jpg", "F.jpg").replace("O.jpg", "F.jpg")
+            pictures.append(picture.find("img", class_="ui-pdp-image").get("data-src").replace("R.jpg", "F.jpg").replace("O.jpg", "F.jpg"))
         return pictures
     except:
         return []
@@ -308,4 +306,4 @@ class VehicleDataManager():
 # for key in year_url_and_count:
 #     get_car_url(key, year_url_and_count[key])
 
-get_car_information("https://carro.mercadolibre.com.do/MRD-504456951-land-rover-discovery-sport-americano-_JM#position=1&search_layout=grid&type=item&tracking_id=7297d4a9-780f-42a7-baad-4e6b171e67c5")
+get_car_information("https://carro.mercadolibre.com.do/MRD-504456942-honda-crv-americana-_JM#position=2&search_layout=grid&type=item&tracking_id=d980975f-41a5-45c3-8c35-1045c5af0526")
