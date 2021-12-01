@@ -102,7 +102,6 @@ def get_car_information(url):
 
     sellerType = get_seller_type(soup)
 
-    print(sellerType)
     if sellerType != 'Particular':
         return
 
@@ -123,6 +122,7 @@ def get_car_information(url):
        "price": price, 
        "currency": currency,
        "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
+       "pictures": pictures,
        "originalMainPicture": picture_section.get("data-zoom"),
        "year": key_error(data_sheet_table, "year"),
        "fuelType": key_error(data_sheet_table, "fuelType"),
@@ -231,6 +231,13 @@ def get_year_url(soup):
         year_href[url] = value
 
     return year_href
+
+def get_gallery_pictures(soup):
+    try:
+        gallery_pictures = soup.find("div", class_="ui-pdp-gallery__container").find_all("img")
+        return gallery_pictures
+    except:
+        return []
 
 # This function is used to get data from the data sheet
 def key_error(data, key):
