@@ -85,6 +85,9 @@ def get_car_information(url):
     
     pictures, len_pictures = get_gallery_pictures(soup)
 
+    if len_pictures < 4:
+        return
+
     replace_text = "Imagen 1 de " + str(len_pictures) + " de "
     
     title = picture_section.get("alt").replace(replace_text, "").replace("  ", " ")
@@ -119,15 +122,18 @@ def get_car_information(url):
     if key_error(data_sheet_table, "model") != None:
         model = key_error(data_sheet_table, "model")
 
+    # vehicle brand and model validation
+    if brand == None or model == None:
+        return
+
     vehicle = {
        "title":title, 
        "brand": brand,
        "model": model,
        "price": price, 
        "currency": currency,
-       "mainPicture": "https://curbo-assets.nyc3.cdn.digitaloceanspaces.com/Curbo%20proximamente.svg",
-       "pictures": pictures,
-       "originalMainPicture": picture_section.get("data-zoom"),
+       "mainPicture": pictures[0],
+       "pictures": pictures[1:4],
        "year": key_error(data_sheet_table, "year"),
        "fuelType": key_error(data_sheet_table, "fuelType"),
        "bodyStyle": key_error(data_sheet_table, "bodyStyle"),
@@ -144,10 +150,6 @@ def get_car_information(url):
        "createdAt": datetime.now().isoformat(),
        "postCreatedAt":  (datetime.now() - timedelta(days=days)).isoformat(),
     }
-
-    # vehicle brand and model validation
-    if vehicle["brand"] == None or vehicle["model"] == None:
-        return
 
     global count
     count += 1
@@ -189,7 +191,7 @@ def get_gallery_pictures(soup):
             pictures.append(picture.find("img", class_="ui-pdp-image").get("data-src").replace("R.jpg", "F.jpg").replace("O.jpg", "F.jpg"))
         
         if len(pictures) > 5:
-            return pictures[1:4], len(pictures)
+            return pictures[0:4], len(pictures)
         return pictures, len(pictures)
     except:
         return []
