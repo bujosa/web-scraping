@@ -83,7 +83,13 @@ def get_car_information(url):
     if picture_section == None:
         return
     
-    title = picture_section.get("alt")
+    pictures = get_gallery_pictures(soup)
+
+    print(pictures)
+
+    replace_text = "Imagen 1 de " + str(len(pictures))
+    
+    title = picture_section.get("alt").replace(replace_text, "")
 
     if title == None:
         return
@@ -176,6 +182,17 @@ def get_car_url(key, value):
             car_url = url.find("a", class_="ui-search-result__content ui-search-link").get("href")
             get_car_information(car_url)
 
+def get_gallery_pictures(soup):
+    try:
+        pictures = []
+        gallery_pictures = soup.find("div", class_="ui-pdp-gallery__column").find_all("span", class_="ui-pdp-gallery__wrapper")
+        for picture in gallery_pictures:
+            picture = picture.find("img", class_="ui-pdp-image").get("data-src").replace("R.jpg", "F.jpg").replace("O.jpg", "F.jpg")
+        return pictures
+    except:
+        return []
+
+
 def get_key(key):
     return fields[key]
 
@@ -231,13 +248,6 @@ def get_year_url(soup):
         year_href[url] = value
 
     return year_href
-
-def get_gallery_pictures(soup):
-    try:
-        gallery_pictures = soup.find("div", class_="ui-pdp-gallery__container").find_all("img")
-        return gallery_pictures
-    except:
-        return []
 
 # This function is used to get data from the data sheet
 def key_error(data, key):
