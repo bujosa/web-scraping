@@ -133,7 +133,7 @@ def get_car_information(url):
        "price": price, 
        "currency": currency,
        "mainPicture": pictures[0],
-       "pictures": pictures[1:4],
+       "pictures": pictures[1:],
        "year": key_error(data_sheet_table, "year"),
        "fuelType": key_error(data_sheet_table, "fuelType"),
        "bodyStyle": key_error(data_sheet_table, "bodyStyle"),
