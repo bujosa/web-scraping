@@ -297,8 +297,8 @@ def state_section(soup):
         return ''
 
 def remove_background_picture(url):
-    requests.post("YOUR API", data={url} ,headers={"Authorization": "Your Token"})
-
+    response = requests.post("YOUR API", data={url} ,headers={"Authorization": "Your Token"})
+    return response.text
 
 #Vehicle data manager class
 class VehicleDataManager():
