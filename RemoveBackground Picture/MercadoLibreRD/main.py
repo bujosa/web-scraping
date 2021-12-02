@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 import pymongo
-import dns
 import math
 from datetime import datetime
 from datetime import timedelta
@@ -299,6 +298,12 @@ def state_section(soup):
     except:
         return ''
 
+def remove_background_picture(url):
+    try: 
+        return response.text
+    except requests.exceptions.RequestException as err:
+        raise SystemExit(err)
+
 def replace_pictures(pictures_to_replace):
     pictures = []
     for picture in pictures_to_replace:
@@ -317,9 +322,9 @@ class VehicleDataManager():
     def addCar(self, vehicleObject):
         self.collection.insert_one(vehicleObject)
 
-# year_url_and_count = get_year_url(soup)
+year_url_and_count = get_year_url(soup)
 
-# for key in year_url_and_count:
-#     get_car_url(key, year_url_and_count[key])
+for key in year_url_and_count:
+    get_car_url(key, year_url_and_count[key])
 
-get_car_information("https://carro.mercadolibre.com.do/MRD-504456942-honda-crv-americana-_JM#position=2&search_layout=grid&type=item&tracking_id=d980975f-41a5-45c3-8c35-1045c5af0526")
+# get_car_information("https://carro.mercadolibre.com.do/MRD-504456942-honda-crv-americana-_JM#position=2&search_layout=grid&type=item&tracking_id=d980975f-41a5-45c3-8c35-1045c5af0526")
