@@ -126,11 +126,14 @@ def get_car_information(url):
     if brand == None or model == None:
         return
 
+    pictures = replace_pictures(pictures)
+
     vehicle = {
        "title":title, 
        "brand": brand,
        "model": model,
-       "price": price, 
+       "price": price*0.95, 
+       "originalPrice": price,
        "currency": currency,
        "mainPicture": pictures[0],
        "pictures": pictures[1:],
@@ -296,23 +299,27 @@ def state_section(soup):
     except:
         return ''
 
-def remove_background_picture(url):
-    response = requests.post("YOUR API", data={url} ,headers={"Authorization": "Your Token"})
-    return response.text
+def replace_pictures(pictures_to_replace):
+    pictures = []
+    for picture in pictures_to_replace:
+        picture_with_background_removed = remove_background_picture(picture)
+        pictures.append(picture_with_background_removed)
+
+    return pictures
 
 #Vehicle data manager class
 class VehicleDataManager():
     def __init__(self): 
             self.connection = pymongo.MongoClient("localhost:27017")
-            db = self.connection["MercadoLibreRD"]
-            self.collection = db['Individual']
+            db = self.connection["UPLOAD_PICTURE_TEST"]
+            self.collection = db['2_Diciembre_2021']
 
     def addCar(self, vehicleObject):
         self.collection.insert_one(vehicleObject)
 
-year_url_and_count = get_year_url(soup)
+# year_url_and_count = get_year_url(soup)
 
-for key in year_url_and_count:
-    get_car_url(key, year_url_and_count[key])
+# for key in year_url_and_count:
+#     get_car_url(key, year_url_and_count[key])
 
-# get_car_information("https://carro.mercadolibre.com.do/MRD-504456942-honda-crv-americana-_JM#position=2&search_layout=grid&type=item&tracking_id=d980975f-41a5-45c3-8c35-1045c5af0526")
+get_car_information("https://carro.mercadolibre.com.do/MRD-504456942-honda-crv-americana-_JM#position=2&search_layout=grid&type=item&tracking_id=d980975f-41a5-45c3-8c35-1045c5af0526")
